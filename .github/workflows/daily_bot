@@ -1,0 +1,41 @@
+name: Daily Website Check
+
+# 1. THE TRIGGER
+# When should this run?
+on:
+  # Option A: Schedule it (Cron Syntax)
+  # This reads: "At minute 0 of hour 8, every day"
+  schedule:
+    - cron: '0 8 * * *'
+  
+  # Option B: Allow manual button press (for testing)
+  workflow_dispatch:
+
+# 2. THE JOBS
+jobs:
+  run-python-bot:
+    runs-on: ubuntu-latest  # We ask for a Linux server
+
+    steps:
+      # Step A: Download our code onto the runner
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step B: Install Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      # Step C: Install libraries
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # Step D: Run the script
+      - name: Execute Script
+        env:
+          # We pass our secret/variable into the script here
+          TARGET_URL: ${{ vars.TARGET_URL }}
+        run: python main.py
+
